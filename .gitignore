@@ -1,0 +1,8 @@
+/Api/appsettings.json
+/Api/appsettings.Development.json
+/Api/bin/
+/Dal/bin/
+/Logic/bin/
+/Api/obj/
+/Dal/obj/
+/Logic/obj/
