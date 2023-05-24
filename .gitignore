@@ -1,5 +1,6 @@
 /SecretsSharing.Api/appsettings.json
 /SecretsSharing.Api/appsettings.Development.json
+/SecretsSharing.Api/JWTSettings
 /SecretsSharing.Api/bin/
 /Dal/bin/
 /Logic/bin/
