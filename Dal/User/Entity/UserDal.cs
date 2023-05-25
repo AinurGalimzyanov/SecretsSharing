@@ -5,5 +5,7 @@ namespace Dal.User.Entity;
 
 public class UserDal : IdentityUser
 {
+    public string? RefreshToken { get; set; }
+    
     public List<FilesDal>? FilesList { get; set; }
 }
