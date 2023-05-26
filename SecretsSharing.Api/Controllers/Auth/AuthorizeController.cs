@@ -48,6 +48,7 @@ public class AuthorizeController : BaseController
             var refreshToken = GetToken(claims, 43200);
             user.RefreshToken = refreshToken;
             await _userManager.UpdateAsync(user);
+            HttpContext.Response.Cookies.Append(".AspNetCore.Application.RefreshToken", refreshToken);
             return Ok(new UserModelResponse("Bearer " + accessToken, user.Email));
         }
 

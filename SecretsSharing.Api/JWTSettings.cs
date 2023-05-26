@@ -2,7 +2,7 @@
 
 public class JWTSettings
 {
-    public string SecretKey { get; init; } = "Bdsfdffdwegbsncedf0";
+    public string SecretKey { get; init; } = "this is my custom Secret key for authentication";
     
     public string Issuer { get; init; } = "false";
     
