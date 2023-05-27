@@ -5,9 +5,9 @@ namespace Dal.Files.Entity;
 
 public class FilesDal : BaseDal<Guid>
 {
-    public string? Path { get; set; }
-
-    public bool IsDelete { get; set; }
+    public string? Name { get; set; }
+    
+    public bool Cascade { get; set; }
     
     public UserDal? UserDal { get; set; }
 }
