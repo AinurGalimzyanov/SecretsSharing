@@ -10,4 +10,5 @@ public interface IFilesManager : IBaseManager<FilesDal, Guid>
     public Task UploadTextAsync(string token, string text, FilesDal dal);
     public Task<Tuple<Stream, string, string>> DownloadFileAsync(FilesDal dal);
     public Task<List<FilesDal>> GetAllFileAsync(string token);
+    public Task DeleteFileAsync(Guid fileId);
 }

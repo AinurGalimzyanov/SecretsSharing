@@ -15,9 +15,10 @@ public class FilesRepository : BaseRepository<FilesDal, Guid>, IFilesRepository
         _context = context;
     }
 
-    public async Task<UserDal> GetUserFile()
+    public async Task<UserDal> GetUserFile(Guid fileId)
     {
         var file = await _context.Set<FilesDal>()
+            .Where(x => x.Id == fileId)
             .Include(x => x.UserDal)
             .FirstOrDefaultAsync();
         return file.UserDal;

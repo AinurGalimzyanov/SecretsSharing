@@ -97,7 +97,7 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
 
     public async Task<Tuple<Stream, string, string>> DownloadFileAsync(FilesDal dal)
     {
-        var user = await _filesRepository.GetUserFile();
+        var user = await _filesRepository.GetUserFile(dal.Id);
         var type = dal.Name.Split(".")[1];
         var api = new DiskHttpApi("y0_AgAAAABR93eBAAn3FAAAAADj_iQ-f3UvbKf6QkOvsUWylH2gEL66jvU");
         var path = $"/SecretsSharing/{user.Id}/{dal.Id}.{type}";
@@ -128,5 +128,16 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         }
 
         return files;
+    }
+
+    public async Task DeleteFileAsync(Guid fileId)
+    {
+        var file = await GetAsync(fileId);
+        var user = await _filesRepository.GetUserFile(file.Id);
+        var type = file.Name.Split(".")[1];
+        var api = new DiskHttpApi("y0_AgAAAABR93eBAAn3FAAAAADj_iQ-f3UvbKf6QkOvsUWylH2gEL66jvU");
+        var path = $"/SecretsSharing/{user.Id}/{file.Id}.{type}";
+        await api.Commands.DeleteAsync(new DeleteFileRequest() {Path = path});
+        await DeleteAsync(fileId);
     }
 }

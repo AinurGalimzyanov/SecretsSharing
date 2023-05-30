@@ -6,5 +6,5 @@ namespace Dal.Files.Repository.Interface;
 
 public interface IFilesRepository : IBaseRepository<FilesDal, Guid>
 {
-    public Task<UserDal> GetUserFile();
+    public Task<UserDal> GetUserFile(Guid fileId);
 }
