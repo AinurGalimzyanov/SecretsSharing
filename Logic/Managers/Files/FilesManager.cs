@@ -37,7 +37,7 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         return await _userManager.FindByEmailAsync(email);
     }
 
-    private async Task UploadToCloudAsync(string userId, string dalId, string pathTemporaryStorageFile, string type)
+    private async Task UploadToCloudAsync(string userId, string dalId, IFormFile file, string type)
     {
         var api = new DiskHttpApi("y0_AgAAAABR93eBAAn3FAAAAADj_iQ-f3UvbKf6QkOvsUWylH2gEL66jvU");
         var pathDirUser = "SecretsSharing" + "/" + userId;
@@ -54,12 +54,8 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         var link = await api.Files.GetUploadLinkAsync("/" + pathDirUser + "/" + dalId + type,
             overwrite: false);
         
-        using (var fileStream = new FileStream(pathTemporaryStorageFile, FileMode.OpenOrCreate))
-        {
-            await api.Files.UploadAsync(link, fileStream);
-        }
+        await api.Files.UploadAsync(link, file.OpenReadStream());
         
-        File.Delete(pathTemporaryStorageFile);
     }
     
     public async Task UploadFileAsync(string token, IFormFile file, FilesDal dal)
@@ -69,14 +65,7 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         var type = dal.Name.Split(".")[1];
         await _filesRepository.InsertAsync(dal);
         
-        var pathTemporaryStorageFile = @"E:\JetBrains Rider 2022.2.2\SecretsSharing\Dal\wwwroot\Files\" + dal.Id;
-
-        using (var fileStream = new FileStream(pathTemporaryStorageFile, FileMode.OpenOrCreate))
-        {
-            await file.CopyToAsync(fileStream);
-        }
-
-        await UploadToCloudAsync(user.Id, dal.Id.ToString(), pathTemporaryStorageFile, $".{type}");
+        await UploadToCloudAsync(user.Id, dal.Id.ToString(), file, $".{type}");
     }
 
     public async Task UploadTextAsync(string token, string text, FilesDal dal)
@@ -84,15 +73,11 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         var user = await FindUser(token);
         dal.UserDal = user;
         await _filesRepository.InsertAsync(dal);
-        var pathTemporaryStorageFile = @"E:\JetBrains Rider 2022.2.2\SecretsSharing\Dal\wwwroot\Files\" + dal.Id;
+        byte[] info = new UTF8Encoding(true).GetBytes(text);
+        var stream = new MemoryStream(info);
+        IFormFile file = new FormFile(stream, 0, info.Length, $"{dal.Name}", $"{dal.Name}");
         
-        using (FileStream fs = File.Create(pathTemporaryStorageFile))
-        {
-            byte[] info = new UTF8Encoding(true).GetBytes(text);
-            fs.Write(info, 0, info.Length);
-        }
-        
-        await UploadToCloudAsync(user.Id, dal.Id.ToString(), pathTemporaryStorageFile, ".txt");
+        await UploadToCloudAsync(user.Id, dal.Id.ToString(), file, ".txt");
     }
 
     public async Task<Tuple<Stream, string, string>> DownloadFileAsync(FilesDal dal)
