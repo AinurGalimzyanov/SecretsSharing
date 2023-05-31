@@ -1,4 +1,4 @@
-﻿namespace Api;
+﻿namespace SecretsSharing;
 
 public class JWTSettings
 {

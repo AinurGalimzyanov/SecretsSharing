@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Api;
 using AutoMapper;
 using Dal.User.Entity;
 using Microsoft.AspNetCore.Identity;

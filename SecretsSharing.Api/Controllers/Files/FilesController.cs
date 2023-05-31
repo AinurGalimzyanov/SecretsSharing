@@ -15,7 +15,6 @@ public class FilesController : BaseController
 {
     private readonly IFilesManager _filesManager;
     private readonly IMapper _mapper;
-    private string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ1c2VyQGV4YW1wbGUuY29tIiwibmJmIjoxNjg1NTU1NDg2LCJleHAiOjE2ODU1NTYzODYsImlzcyI6ImZhbHNlIiwiYXVkIjoic2RmZiJ9.rEYyCxGY-GKqSo9iAkxfYShgCvyUoU5vUjpMLh0cuF0";
     
     /// <summary>
     /// controller constructor
@@ -39,7 +38,7 @@ public class FilesController : BaseController
     {
         try
         {
-            //var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
             var dal = new FilesDal() {Cascade = сascade, Name = file.FileName};
             await _filesManager.UploadFileAsync(token, file, dal);
             var uri = new Uri($"{Request.Scheme}://{Request.Host}/api/v1/Files/id={dal.Id}");
@@ -61,7 +60,7 @@ public class FilesController : BaseController
     {
         try
         {
-            //var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
             var dal = new FilesDal() {Cascade = model.Cascade, Name = model.Name + ".txt"};
             await _filesManager.UploadTextAsync(token, model.Text, dal);
             var uri = new Uri($"{Request.Scheme}://{Request.Host}/api/v1/Files/id={dal.Id}");
@@ -112,7 +111,7 @@ public class FilesController : BaseController
     [HttpGet("getAllFile")]
     public async Task<IActionResult> GtAllFile()
     {
-        //var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
         var files = await _filesManager.GetAllFileAsync(token);
         var result = files.Select(x => _mapper.Map<FileModelResponse>(x)).ToList();
         return Ok(new AllFileModelResponse(result));
