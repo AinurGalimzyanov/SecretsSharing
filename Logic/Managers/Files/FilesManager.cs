@@ -15,6 +15,9 @@ using YandexDisk.Client.Protocol;
 
 namespace Logic.Managers.Files;
 
+/// <summary>
+/// file manager
+/// </summary>
 public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
 {
     private readonly UserManager<UserDal> _userManager;
@@ -28,6 +31,11 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         _filesRepository = repository;
     }
 
+    /// <summary>
+    /// method for searching for a user by token
+    /// </summary>
+    /// <param name="token">user access token</param>
+    /// <returns>found userDal</returns>
     private async Task<UserDal> FindUser(string token)
     {
         var handler = new JwtSecurityTokenHandler();
@@ -37,6 +45,13 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         return await _userManager.FindByEmailAsync(email);
     }
 
+    /// <summary>
+    /// method for uploading files to yandex disk
+    /// </summary>
+    /// <param name="userId">unique userDal id</param>
+    /// <param name="dalId">unique fileDal id</param>
+    /// <param name="file">downloadable file</param>
+    /// <param name="type">type file</param>
     private async Task UploadToCloudAsync(string userId, string dalId, IFormFile file, string type)
     {
         var api = new DiskHttpApi("y0_AgAAAABR93eBAAn3FAAAAADj_iQ-f3UvbKf6QkOvsUWylH2gEL66jvU");
@@ -58,6 +73,13 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         
     }
     
+    /// <summary>
+    /// method for uploading files to yandex disk
+    /// </summary>
+    /// <param name="token">user access token</param>
+    /// <param name="file">downloadable file</param>
+    /// <param name="dal">the entity(dal) with which we interact</param>
+    /// <returns></returns>
     public async Task UploadFileAsync(string token, IFormFile file, FilesDal dal)
     {
         var user = await FindUser(token);
@@ -68,6 +90,13 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         await UploadToCloudAsync(user.Id, dal.Id.ToString(), file, $".{type}");
     }
 
+    /// <summary>
+    /// method for uploading text file to yandex disk
+    /// </summary>
+    /// <param name="token">user access token</param>
+    /// <param name="text">the text that we received</param>
+    /// <param name="dal">the entity(dal) with which we interact</param>
+    /// <returns></returns>
     public async Task UploadTextAsync(string token, string text, FilesDal dal)
     {
         var user = await FindUser(token);
@@ -80,6 +109,11 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         await UploadToCloudAsync(user.Id, dal.Id.ToString(), file, ".txt");
     }
 
+    /// <summary>
+    /// method for downloading a file from yandex disk
+    /// </summary>
+    /// <param name="dal">the entity(dal) with which we interact</param>
+    /// <returns>we return everything necessary to assemble the user's file(FileStream, fileType, fileName)</returns>
     public async Task<Tuple<Stream, string, string>> DownloadFileAsync(FilesDal dal)
     {
         var user = await _filesRepository.GetUserFile(dal.Id);
@@ -96,6 +130,11 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         return new Tuple<Stream, string, string>(fileStream, fileType, $"img.{type}");
     }
 
+    /// <summary>
+    /// a method for searching for files that the user has on yandex disk
+    /// </summary>
+    /// <param name="token">user access token</param>
+    /// <returns>returns a list of files that the user has on yandex disk</returns>
     public async Task<List<FilesDal>> GetAllFileAsync(string token)
     {
         var files = new List<FilesDal>();
@@ -115,6 +154,11 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
         return files;
     }
 
+    /// <summary>
+    /// method to delete a user's file from yandex disk
+    /// </summary>
+    /// <param name="fileId">unique fileDal id</param>
+    /// <returns></returns>
     public async Task DeleteFileAsync(Guid fileId)
     {
         var file = await GetAsync(fileId);

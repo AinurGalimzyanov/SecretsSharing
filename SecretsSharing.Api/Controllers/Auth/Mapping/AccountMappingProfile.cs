@@ -4,6 +4,9 @@ using SecretsSharing.Controllers.Auth.Dto.Request;
 
 namespace SecretsSharing.Controllers.Auth.Mapping;
 
+/// <summary>
+/// class for converting RegisterAndSignInModelRequest to UserDal
+/// </summary>
 public class AccountMappingProfile : Profile
 {
     public AccountMappingProfile()

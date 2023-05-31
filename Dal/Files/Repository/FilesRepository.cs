@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dal.Files.Repository;
 
+/// <summary>
+/// repository for working with files
+/// </summary>
 public class FilesRepository : BaseRepository<FilesDal, Guid>, IFilesRepository
 {
     private readonly DataContext _context;
@@ -15,6 +18,11 @@ public class FilesRepository : BaseRepository<FilesDal, Guid>, IFilesRepository
         _context = context;
     }
 
+    /// <summary>
+    /// get the user to whom a certain file belongs
+    /// </summary>
+    /// <param name="fileId">unique identifier of the FileDal</param>
+    /// <returns>get UserDal</returns>
     public async Task<UserDal> GetUserFile(Guid fileId)
     {
         var file = await _context.Set<FilesDal>()

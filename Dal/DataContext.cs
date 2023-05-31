@@ -6,21 +6,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dal;
 
+/// <summary>
+/// a class representing the current database view using Identity
+/// </summary>
 public class DataContext : IdentityDbContext<UserDal>
 {
+    /// <summary>
+    /// list of all file table entries
+    /// </summary>
     public DbSet<FilesDal> Files { get; set; }
     
+    /// <summary>
+    /// sends a request to update the database corresponding to the class fields
+    /// </summary>
     public async Task<int> SaveChangesAsync()
     {
         return await base.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// constructor class, inherited from the base
+    /// </summary>
+    /// <param name="options">input parameters</param>
     public DataContext(DbContextOptions<DataContext> options)
         : base(options)
     {
         Database.EnsureCreated();   
     }
 
+    /// <summary>
+    /// method for configuring database table fields
+    /// </summary>
+    /// <param name="modelBuilder">form of entities</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -12,9 +12,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SecretsSharing.Controllers.Auth.Mapping;
+using SecretsSharing.Controllers.Files.Dto.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Authentication settings via JwtBearer
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -35,11 +37,13 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+// connecting to the database
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// adding identity
 builder.Services.AddIdentity<UserDal, IdentityRole>(config =>
     {
         config.Password.RequiredLength = 4; 
@@ -53,23 +57,23 @@ builder.Services.AddIdentity<UserDal, IdentityRole>(config =>
 
 builder.Services.AddControllers();
 
-
-builder.Services.AddScoped<RoleManager<IdentityRole>>();
+//working with files
 builder.Services.AddScoped<IFilesRepository, FilesRepository>();
 builder.Services.AddScoped<IFilesManager, FilesManager>();
 
 
 //Mapping
 builder.Services.AddAutoMapper(typeof(AccountMappingProfile));
+builder.Services.AddAutoMapper(typeof(FileResponseProfile));
 
 
 builder.Services.AddCors();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -84,7 +88,7 @@ app.UseCors(x => x
 
 app.UseHttpsRedirection();
 
-// Подключаем авторизацию, аутентификацию и айдентити
+// Enabling authorization, authentication
 app.UseAuthentication();
 app.UseAuthorization();
 

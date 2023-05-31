@@ -14,6 +14,9 @@ using SecretsSharing.Controllers.Base;
 
 namespace SecretsSharing.Controllers.Auth;
 
+/// <summary>
+/// controller that works with requests related to user authorization
+/// </summary>
 public class AuthorizeController : BaseController
 {
     private readonly SignInManager<UserDal> _signInManager;
@@ -21,6 +24,13 @@ public class AuthorizeController : BaseController
     private readonly JWTSettings _options;
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// controller constructor
+    /// </summary>
+    /// <param name="userManager">User logic service</param>
+    /// <param name="signInManager">Logic service for working with user authentication</param>
+    /// <param name="options">Unique token settings</param>
+    /// <param name="mapper">automapper</param>
     public AuthorizeController(UserManager<UserDal> userManager, 
         SignInManager<UserDal> signInManager, 
         IOptions<JWTSettings> options,
@@ -32,6 +42,11 @@ public class AuthorizeController : BaseController
         _mapper = mapper;
     }
     
+    /// <summary>
+    /// registers a new user
+    /// </summary>
+    /// <param name="model">the model of information about the registered user</param>
+    /// <returns>information about the user or BadRequest</returns>
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterAndSignInModelRequest model)
     {
@@ -55,6 +70,12 @@ public class AuthorizeController : BaseController
         return BadRequest();
     }
     
+    /// <summary>
+    /// route for creating a new token(access or refresh)
+    /// </summary>
+    /// <param name="principal">claims for token</param>
+    /// <param name="timeMin">token lifetime in min</param>
+    /// <returns>token</returns>
     private string GetToken(IEnumerable<Claim> principal, int timeMin)
     {
         var claims = principal.ToList();
@@ -73,6 +94,11 @@ public class AuthorizeController : BaseController
         return tokenHandler.WriteToken(token);
     }
     
+    /// <summary>
+    /// route for finding a user by token
+    /// </summary>
+    /// <param name="token">user token</param>
+    /// <returns>UserDal</returns>
     private async Task<UserDal> FindUserByToken(string token)
     {
         var handler = new JwtSecurityTokenHandler();
@@ -81,6 +107,11 @@ public class AuthorizeController : BaseController
         return await _userManager.FindByEmailAsync(email);;
     }
     
+    /// <summary>
+    /// the route that logs the user
+    /// </summary>
+    /// <param name="model">the model of information about the signin user</param>
+    /// <returns>information about the user or Unauthorized</returns>
     [HttpPost("signin")]
     public async Task<IActionResult> SignIn([FromBody] RegisterAndSignInModelRequest model)
     {
@@ -102,6 +133,10 @@ public class AuthorizeController : BaseController
         return Unauthorized();
     }
     
+    /// <summary>
+    /// the route that updates refresh token
+    /// </summary>
+    /// <returns>information about the user or BadRequest</returns>
     [HttpPatch("refreshAccessToken")]
     public async Task<IActionResult> RefreshToken()
     {
