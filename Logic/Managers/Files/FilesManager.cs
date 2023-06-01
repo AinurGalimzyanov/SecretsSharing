@@ -130,7 +130,7 @@ public class FilesManager  : BaseManager<FilesDal, Guid>, IFilesManager
             await api.Commands.DeleteAsync(new DeleteFileRequest() {Path = path});
             await _filesRepository.DeleteAsync(dal.Id);
         }
-        return new Tuple<Stream, string, string>(fileStream, fileType, $"img.{type}");
+        return new Tuple<Stream, string, string>(fileStream, fileType, $"file.{type}");
     }
 
     /// <summary>
